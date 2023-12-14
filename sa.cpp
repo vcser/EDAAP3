@@ -13,6 +13,8 @@
 using namespace sdsl;
 using namespace std;
 
+vector<string> file_names;
+
 // Función para buscar todas las ocurrencias de un patrón en un Suffix Array
 std::vector<int> search_all_occurrences(const std::string& pattern,
                                         const std::string& txt,
@@ -57,56 +59,21 @@ std::vector<int> search_all_occurrences(const std::string& pattern,
   return occurrences;
 }
 
-class SA {
-  SA() {}
-
-  vector<string> doc_locate(string T, string p) {}
-};
-
-int main(int argc, char** argv) {
-  if (argc < 2) {
-    cout << "Uso: " << argv[0] << " [archivos]" << endl;
-    return 1;
-  }
-
-  // PASO 1: leer archivos y concatenarlos
-  vector<string> file_names;
-  string seq;
-  for (int i = 1; i < argc; i++) {
-    file_names.push_back(argv[i]);
-    int_vector<> tmp;
-    load_vector_from_file(tmp, argv[i], 1);
-    string str(tmp.begin(), tmp.end());
-    seq += str + (char)3;
-  }
-
+vector<string> doc_locate(string T, string p) {
   // PASO 2: construir suffix array
-  int n = seq.size();
+  int n = T.size();
   int_vector<> sa(1, 0, bits::hi(n) + 1);
   sa.resize(n);
-  algorithm::calculate_sa((const unsigned char*)seq.data(), n, sa);
+  algorithm::calculate_sa((const unsigned char*)T.data(), n, sa);
 
   // PASO 3: encontrar posiciones del patron
-  string patron = "Incorrect IRQ";
-  auto posiciones = search_all_occurrences(patron, seq, sa);
+  auto posiciones = search_all_occurrences(p, T, sa);
   sort(posiciones.begin(), posiciones.end());
-  
-  // DEBUG
-  // cout << "POSICIONES PATRON:" << endl;
-  // for (size_t i = 0; i < posiciones.size(); ++i) {
-  //   cout << posiciones[i] << endl;
-  // }
 
   // PASO 4: encontrar posiciones de los delimitadores de archivos
   string delim = "\3";
-  auto delim_positions = search_all_occurrences(delim, seq, sa);
+  auto delim_positions = search_all_occurrences(delim, T, sa);
   sort(delim_positions.begin(), delim_positions.end());
-
-  // DEBUG
-  // cout << "POSICIONES delimitador:" << endl;
-  // for (size_t i = 0; i < delim_positions.size(); ++i) {
-  //   cout << delim_positions[i] << endl;
-  // }
 
   // PASO 5: calcular nombres de archivos en que se encuentra patron
   set<string> files;
@@ -116,6 +83,32 @@ int main(int argc, char** argv) {
               delim_positions.begin();
     files.insert(file_names[pos]);
   }
+
+  return vector<string>(files.begin(), files.end());
+}
+
+int main(int argc, char** argv) {
+  if (argc < 3) {
+    cout << "Uso: " << argv[0] << "<archivo patron> [archivos]" << endl;
+    return 1;
+  }
+
+  // PASO 0: leer archivo patron
+  int_vector<> tmp;
+  load_vector_from_file(tmp, argv[1], 1);
+  string pattern(tmp.begin(), tmp.end());
+
+  // PASO 1: leer archivos y concatenarlos
+  string seq;
+  for (int i = 2; i < argc; i++) {
+    file_names.push_back(argv[i]);
+    int_vector<> tmp;
+    load_vector_from_file(tmp, argv[i], 1);
+    string str(tmp.begin(), tmp.end());
+    seq += str + (char)3;
+  }
+
+  auto files = doc_locate(seq, pattern);
 
   for (auto f : files) cout << f << endl;
 

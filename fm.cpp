@@ -12,50 +12,21 @@
 using namespace sdsl;
 using namespace std;
 
-class FMIndex {
-  FMIndex() {}
+vector<string> file_names;
 
-  vector<string> doc_locate(string T, string p) {}
-};
-
-int main(int argc, char** argv) {
-  if (argc < 2) {
-    cout << "Uso: " << argv[0] << " [archivos]" << endl;
-    return 1;
-  }
-
-  // PASO 1: leer archivos y concatenarlos
-  vector<string> file_names;
-  string seq;
-  for (int i = 1; i < argc; i++) {
-    file_names.push_back(argv[i]);
-    int_vector<> tmp;
-    load_vector_from_file(tmp, argv[i], 1);
-    string str(tmp.begin(), tmp.end());
-    seq += str + (char)3;
-  }
-
+vector<string> doc_locate(string T, string p) {
   // PASO 2: construir FM-index
   csa_wt<wt_huff<>> fm_index;
-  construct_im(fm_index, seq, 1);
+  construct_im(fm_index, T, 1);
 
   // PASO 3: encontrar posiciones del patron
-  string patron = "Incorrect IRQ";
-  auto posiciones = locate(fm_index, patron.begin(), patron.end());
+  auto posiciones = locate(fm_index, p.begin(), p.end());
   sort(posiciones.begin(), posiciones.end());
-  cout << "POSICIONES PATRON:" << endl;
-  for (size_t i = 0; i < posiciones.size(); ++i) {
-    cout << posiciones[i] << endl;
-  }
 
   // PASO 4: encontrar posiciones de los delimitadores de archivos
   string delim = "\3";
   auto delim_positions = locate(fm_index, delim.begin(), delim.end());
   sort(delim_positions.begin(), delim_positions.end());
-  cout << "POSICIONES delimitador:" << endl;
-  for (size_t i = 0; i < delim_positions.size(); ++i) {
-    cout << delim_positions[i] << endl;
-  }
 
   // PASO 5: calcular nombres de archivos en que se encuentra patron
   set<string> files;
@@ -65,6 +36,32 @@ int main(int argc, char** argv) {
               delim_positions.begin();
     files.insert(file_names[pos]);
   }
+
+  return vector<string>(files.begin(), files.end());
+}
+
+int main(int argc, char** argv) {
+  if (argc < 3) {
+    cout << "Uso: " << argv[0] << "<archivo patron> [archivos]" << endl;
+    return 1;
+  }
+
+  // PASO 0: leer archivo patron
+  int_vector<> tmp;
+  load_vector_from_file(tmp, argv[1], 1);
+  string pattern(tmp.begin(), tmp.end());
+
+  // PASO 1: leer archivos y concatenarlos
+  string seq;
+  for (int i = 2; i < argc; i++) {
+    file_names.push_back(argv[i]);
+    int_vector<> tmp;
+    load_vector_from_file(tmp, argv[i], 1);
+    string str(tmp.begin(), tmp.end());
+    seq += str + (char)3;
+  }
+
+  auto files = doc_locate(seq, pattern);
 
   for (auto f : files) cout << f << endl;
 
