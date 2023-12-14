@@ -12,6 +12,12 @@
 using namespace sdsl;
 using namespace std;
 
+class FMIndex {
+  FMIndex() {}
+
+  vector<string> doc_locate(string T, string p) {}
+};
+
 int main(int argc, char** argv) {
   if (argc < 2) {
     cout << "Uso: " << argv[0] << " [archivos]" << endl;
@@ -28,7 +34,6 @@ int main(int argc, char** argv) {
     string str(tmp.begin(), tmp.end());
     seq += str + (char)3;
   }
-  // cout << "DEBUG:" << seq << endl;
 
   // PASO 2: construir FM-index
   csa_wt<wt_huff<>> fm_index;
