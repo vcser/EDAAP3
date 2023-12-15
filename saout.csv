@@ -1,0 +1,11 @@
+size,pattern,time
+datasets/english/english1MB.txt,Accordingly,32
+datasets/english/english2MB.txt,Accordingly,85
+datasets/english/english3MB.txt,Accordingly,134
+datasets/english/english4MB.txt,Accordingly,164
+datasets/english/english5MB.txt,Accordingly,208
+datasets/english/english6MB.txt,Accordingly,257
+datasets/english/english7MB.txt,Accordingly,326
+datasets/english/english8MB.txt,Accordingly,350
+datasets/english/english9MB.txt,Accordingly,362
+datasets/english/english10MB.txt,Accordingly,424

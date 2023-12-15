@@ -1,0 +1,11 @@
+text_size,pattern_size,time
+datasets/english/english1MB.txt,100,33
+datasets/english/english1MB.txt,200,32
+datasets/english/english1MB.txt,300,33
+datasets/english/english1MB.txt,400,33
+datasets/english/english1MB.txt,500,33
+datasets/english/english1MB.txt,600,33
+datasets/english/english1MB.txt,700,33
+datasets/english/english1MB.txt,800,33
+datasets/english/english1MB.txt,900,33
+datasets/english/english1MB.txt,1000,33

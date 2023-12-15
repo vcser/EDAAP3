@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sdsl/suffix_arrays.hpp>
 #include <string>
+#include <chrono>
 
 using namespace sdsl;
 using namespace std;
@@ -61,9 +62,18 @@ int main(int argc, char** argv) {
     seq += str + (char)3;
   }
 
-  auto files = doc_locate(seq, pattern);
+  #define ITER 30
 
-  for (auto f : files) cout << f << endl;
+  auto start = chrono::high_resolution_clock::now();
+  for (int i = 0; i < ITER; i++) {
+    auto files = doc_locate(seq, pattern);
+  }
+  auto stop = chrono::high_resolution_clock::now();
+  auto elapsed = chrono::duration_cast<chrono::milliseconds>(stop - start).count() / ITER;
+
+  cout << argv[2] << "," << pattern.size() << "," << elapsed << "\n";
+
+  // for (auto f : files) cout << f << endl;
 
   return 0;
 }
